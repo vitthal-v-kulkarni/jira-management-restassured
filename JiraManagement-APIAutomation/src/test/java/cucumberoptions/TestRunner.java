@@ -8,7 +8,8 @@ import io.cucumber.junit.CucumberOptions;
 @RunWith(Cucumber.class)
 @CucumberOptions(
 		features = {"classpath:features"},
-		glue = "stepdefinitions"
+		glue = "stepdefinitions",
+		stepNotifications = true
 		)
 public class TestRunner {
 

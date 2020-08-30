@@ -1,13 +1,9 @@
 package stepdefinitions;
 
 import static io.restassured.RestAssured.given;
-import static org.hamcrest.Matchers.*;
-
-
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import io.restassured.response.Response;
 import io.restassured.specification.RequestSpecification;
@@ -19,7 +15,8 @@ public class GetAPI {
 	
 		static RequestSpecification responseSpec;
 		Response res;
-		String str;
+		JsonPath js;
+		String responseString;
 
 	
 	@Given("Payload is created")
@@ -31,17 +28,72 @@ public class GetAPI {
 				.log().all();		
 	}
 
-	@When("User triggers Authentication URL")
-	public void user_triggers_authentication_url() {
+	@When("User triggers GET URL")
+	public void user_triggers_get_url() {
 		
 		res = responseSpec.when().get(Common.getUrl).then().assertThat().statusCode(200).log().all().extract().response();
+		
+		responseString = res.asString();
+		js = new JsonPath(responseString);
 	}
 
-	@Then("SessionID should be generated successfully")
-	public void session_id_should_be_generated_successfully() {
+	@Then("Jira issue should be retrieved successfully")
+	public void jira_issue_should_be_retrieved_successfully() {		
 		
-		String responseString = res.asString();
-		JsonPath js = new JsonPath(responseString);		
 		Assert.assertEquals(js.getString("key").toString(), "TBP-2");
 	}
+	
+	@Then("Verify IssueType Name correctly retrieved")
+	public void verify_issue_type_name_correctly_retrieved() {
+		
+		Assert.assertEquals(js.getString("fields.issuetype.name").toString(), "Story");
+		
+	}
+
+	@Then("Verify IssueType Subtask correctly retrieved")
+	public void verify_issue_type_subtask_correctly_retrieved() {
+
+		Assert.assertEquals(js.getString("fields.issuetype.subtask").toString(), "false");
+	}
+
+	@Then("Verify Project ID correctly retrieved")
+	public void verify_project_id_correctly_retrieved() {
+
+		Assert.assertEquals(js.getString("fields.project.id").toString(), "10000");
+	}
+
+	@Then("Verify Project Key correctly retrieved")
+	public void verify_project_key_correctly_retrieved() {
+
+		Assert.assertEquals(js.getString("fields.project.key").toString(), "TBP");
+	}
+
+	@Then("Verify Project Name correctly retrieved")
+	public void verify_project_name_correctly_retrieved() {
+
+		Assert.assertEquals(js.getString("fields.project.name").toString(), "Test Banking Project");
+	}
+
+	@Then("Verify Project TypeKey correctly retrieved")
+	public void verify_project_type_key_correctly_retrieved() {
+
+		Assert.assertEquals(js.getString("fields.project.projectTypeKey").toString(), "software");
+	}
+
+	@Then("Verify Project Simplified correctly retrieved")
+	public void verify_project_simplified_correctly_retrieved() {
+
+		Assert.assertEquals(js.getString("fields.project.simplified").toString(), "false");
+	}
+
+	
 }
+
+
+
+
+
+
+
+
+
